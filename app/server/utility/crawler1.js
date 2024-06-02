@@ -1,33 +1,10 @@
 const axios = require("axios")
 const cheerio = require("cheerio")
 const { uriLocal } = require('../db/connect')
-const esprima = require('esprima')
+const { pageModel } = require("../models/pageModel")
 
 const mongoose = require('mongoose');
-// Replace with your details
-// const removeFunctions = (code) => {
-//     try {
-//         const ast = esprima.parse(code, { range: true })
 
-//         const visitor = {
-//             FunctionDeclaration: function(node) {
-//                 const start = node.range[0];
-//                 const end = node.range[1];
-//                 code = code.slice(0, start) + code.slice(end)
-//             },
-//             FunctionExpression: function(node) {
-//                 const start = node.range[0];
-//                 const end = node.range[1];
-//                 code = code.slice(0, start) + node.slice(end)
-//             },
-//         }
-//         esprima.walk(ast, visitor)
-//         return code
-//     } catch (error) {
-//         console.error('Error parsing Javascript:', error)
-//         return code;
-//     }
-// }
 const removeDuplicateSentences = (sentenceList) => {
     const uniqueSentences = new Set()
     const stringSentences = sentenceList.filter(element => typeof element === 'string')
@@ -53,10 +30,17 @@ const checkedData = []
 const urlPassed = []
 
 const addToQueue = (url) => {
-    if (!queue.includes(url) && url.startsWith('http') || url.startsWith('https')) {
+    if (!queue.includes(url) && !url.includes('robots.tx') && url.startsWith('http') || url.startsWith('https')) {
         if (check(url, checkedData)) {
             queue.push(url)
         }
+    }
+}
+const createDbCrawler = async(title, url, images, contents, links, status) => {
+    try {
+
+    } catch (error) {
+        console.error(error)
     }
 }
 const crawlPage = async(url) => {
@@ -79,12 +63,7 @@ const crawlPage = async(url) => {
         const title = $("title").text().trim()
 
         const body = []
-        let newBody
-        for (let i; i < body; i++) {
-            const words = body[i].split(/\s+/)
-            const uniqueWords = newSet(words.map(word => word))
-            newBody = newBody
-        }
+
         // filtered$('th').map((_, element) => {
         //     const newDate = $(element).text().trim()
         //     if (check(newDate, body) === true) {
@@ -150,19 +129,37 @@ const crawlPage = async(url) => {
             })
             //Links
         const links = []
-
+        const bodySplitted = removeDuplicateSentences(body)
         $("a").each((_, element) => {
-                const newUrl = $(element).attr('href')
+            const newUrl = $(element).attr('href')
 
-                if (newUrl && newUrl.startsWith("http") && newUrl.startsWith("https")) {
-                    if (check(newUrl, links) === true) {
-                        links.push(newUrl)
-                    }
+            if (newUrl && newUrl.startsWith("http") && newUrl.startsWith("https")) {
+                if (check(newUrl, links) === true) {
+                    links.push(newUrl)
+                    createDbCrawler(title, url, images, bodySplitted, newUrl, true)
                 }
+            }
+        })
+        const confirmedLinks = await pageModel.find()
+        const checkLinks = []
+        for (let i = 0; i < confirmedLinks.length; i++) {
+            checkLinks.push(confirmedLinks[i].url)
+        }
+
+        console.log(bodySplitted)
+        if (checkLinks.includes(url) !== true) {
+            const page = new pageModel({
+                title: title,
+                url: url,
+                images: images,
+                content: bodySplitted,
+                links: links,
+                status: true
             })
-            // console.log(`Crawled : ${url}`)
-            // const bodySplitted = removeDuplicateSentences(body)
-            // console.log(` Body : ${bodySplitted} Number: ${body.length}`)
+            await page.save()
+        }
+        // console.log(`Crawled : ${url}`)
+        // console.log(` Body : ${bodySplitted} Number: ${body.length}`)
         for (const newUrl of links) {
             addToQueue(newUrl)
         }
@@ -180,8 +177,8 @@ const run = () => {
             addToQueue(baseUrl)
 
             while (queue.length > 0) {
-                console.log("Queue: ", queue)
                 const nextUrl = queue.shift()
+                console.log("Queue", queue, queue.length)
                 urlPassed.push(nextUrl)
                 while (queue.length < queue.length) {
                     console.log("inside" + queue.length)
@@ -193,5 +190,5 @@ const run = () => {
         })
         .catch(err => console.error("Error connecting to MongoDB:", err));
 }
-console.log(queue)
+
 run()
