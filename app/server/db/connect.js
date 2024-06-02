@@ -12,4 +12,5 @@ const connectDB = async(uri) => {
         return console.error(`error message ${error.message}`)
     }
 }
-module.exports = { connectDB }
+const uriLocal = "mongodb://localhost:27017/searchEngine";
+module.exports = { connectDB, uriLocal }

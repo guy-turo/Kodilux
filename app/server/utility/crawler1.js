@@ -1,10 +1,46 @@
 const axios = require("axios")
 const cheerio = require("cheerio")
+const { uriLocal } = require('../db/connect')
+const esprima = require('esprima')
 
 const mongoose = require('mongoose');
-const uri = "mongodb://localhost:27017/searchEngine"; // Replace with your details
+// Replace with your details
+// const removeFunctions = (code) => {
+//     try {
+//         const ast = esprima.parse(code, { range: true })
 
+//         const visitor = {
+//             FunctionDeclaration: function(node) {
+//                 const start = node.range[0];
+//                 const end = node.range[1];
+//                 code = code.slice(0, start) + code.slice(end)
+//             },
+//             FunctionExpression: function(node) {
+//                 const start = node.range[0];
+//                 const end = node.range[1];
+//                 code = code.slice(0, start) + node.slice(end)
+//             },
+//         }
+//         esprima.walk(ast, visitor)
+//         return code
+//     } catch (error) {
+//         console.error('Error parsing Javascript:', error)
+//         return code;
+//     }
+// }
+const removeDuplicateSentences = (sentenceList) => {
+    const uniqueSentences = new Set()
+    const stringSentences = sentenceList.filter(element => typeof element === 'string')
+    for (const sentence of stringSentences) {
+        const lowerCaseSentence = sentence.toLowerCase()
+        if (!uniqueSentences.has(lowerCaseSentence)) {
+            uniqueSentences.add(lowerCaseSentence)
+        }
+    }
+    return Array.from(uniqueSentences)
+}
 const check = (data, checkedList) => {
+
     if (!checkedList.includes(data)) {
         checkedList.push(data)
         return true
@@ -42,54 +78,59 @@ const crawlPage = async(url) => {
         //title
         const title = $("title").text().trim()
 
-        //Body
         const body = []
-        $('th').map((_, element) => {
-            const newDate = $(element).text()
-            if (check(newDate, body) === true) {
-                body.push(newDate)
-            }
-        })
-        $('td').map((_, element) => {
-            const newDate = $(element).text()
-            if (check(newDate, body) === true) {
-                body.push(newDate)
-            }
-        })
-        $('span').map((_, element) => {
-            const newDate = $(element).text()
-            if (check(newDate, body) === true) {
-                body.push(newDate)
-            }
-        })
+        let newBody
+        for (let i; i < body; i++) {
+            const words = body[i].split(/\s+/)
+            const uniqueWords = newSet(words.map(word => word))
+            newBody = newBody
+        }
+        // filtered$('th').map((_, element) => {
+        //     const newDate = $(element).text().trim()
+        //     if (check(newDate, body) === true) {
+        //         body.push(newDate)
+        //     }
+        // })
+        // filtered$('td').map((_, element) => {
+        //     const newDate = $(element).text().trim()
+        //     if (check(newDate, body) === true) {
+        //         body.push(newDate)
+        //     }
+        // })
+        // filtered$('span').map((_, element) => {
+        //     const newDate = $(element).text().trim()
+        //     if (check(newDate, body) === true) {
+        //         body.push(newDate)
+        //     }
+        // })
         $('h3').map((_, element) => {
-            const newDate = $(element).text()
+            const newDate = $(element).text().trim()
             if (check(newDate, body) === true) {
                 body.push(newDate)
             }
         })
         $('h2').map((_, element) => {
-            const newDate = $(element).text()
+            const newDate = $(element).text().trim()
             if (check(newDate, body) === true) {
                 body.push(newDate)
             }
         })
         $('h1').map((_, element) => {
-            const newDate = $(element).text()
+            const newDate = $(element).text().trim()
             if (check(newDate, body) === true) {
                 body.push(newDate)
             }
         })
         $('p').map((_, element) => {
-                const newDate = $(element).text()
+                const newDate = $(element).text().trim()
                 if (check(newDate, body) === true) {
                     body.push(newDate)
                 }
             })
-            //Date
+            // Date
         const date = []
         const dateText = $('.date').text().trim()
-        date.push(dateText)
+            // date.push(dateText)
 
         $('time').map((_, element) => {
                 const newDate = $(element).attr("datetime")
@@ -111,16 +152,17 @@ const crawlPage = async(url) => {
         const links = []
 
         $("a").each((_, element) => {
-            const newUrl = $(element).attr('href')
+                const newUrl = $(element).attr('href')
 
-            if (newUrl && newUrl.startsWith("http") && newUrl.startsWith("https")) {
-                if (check(newUrl, links) === true) {
-                    links.push(newUrl)
+                if (newUrl && newUrl.startsWith("http") && newUrl.startsWith("https")) {
+                    if (check(newUrl, links) === true) {
+                        links.push(newUrl)
+                    }
                 }
-            }
-        })
-        console.log(`Crawled : ${url}`)
-        console.log(`Body : ${body}`)
+            })
+            // console.log(`Crawled : ${url}`)
+            // const bodySplitted = removeDuplicateSentences(body)
+            // console.log(` Body : ${bodySplitted} Number: ${body.length}`)
         for (const newUrl of links) {
             addToQueue(newUrl)
         }
@@ -130,13 +172,15 @@ const crawlPage = async(url) => {
 }
 
 const run = () => {
-    mongoose.connect(uri)
+    mongoose.connect(uriLocal)
         .then(async() => {
             console.log("Connected to MongoDB")
             const baseUrl = "https://www.google.com/webhp?hl=fr&sa=X&ved=0ahUKEwidr5Oq3ISEAxULUqQEHaaDA8EQPAgJ"
             urlPassed.push(baseUrl)
             addToQueue(baseUrl)
+
             while (queue.length > 0) {
+                console.log("Queue: ", queue)
                 const nextUrl = queue.shift()
                 urlPassed.push(nextUrl)
                 while (queue.length < queue.length) {
@@ -149,5 +193,5 @@ const run = () => {
         })
         .catch(err => console.error("Error connecting to MongoDB:", err));
 }
-
+console.log(queue)
 run()
