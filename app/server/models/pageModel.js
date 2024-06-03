@@ -8,7 +8,6 @@ const pageSchema = schema({
     url: {
         type: String,
         require: true,
-        unique: true
     },
     images: {
         type: Array,

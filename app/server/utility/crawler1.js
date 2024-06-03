@@ -36,13 +36,6 @@ const addToQueue = (url) => {
         }
     }
 }
-const createDbCrawler = async(title, url, images, contents, links, status) => {
-    try {
-
-    } catch (error) {
-        console.error(error)
-    }
-}
 const crawlPage = async(url) => {
     try {
         const response = await axios.get(url)
@@ -64,24 +57,6 @@ const crawlPage = async(url) => {
 
         const body = []
 
-        // filtered$('th').map((_, element) => {
-        //     const newDate = $(element).text().trim()
-        //     if (check(newDate, body) === true) {
-        //         body.push(newDate)
-        //     }
-        // })
-        // filtered$('td').map((_, element) => {
-        //     const newDate = $(element).text().trim()
-        //     if (check(newDate, body) === true) {
-        //         body.push(newDate)
-        //     }
-        // })
-        // filtered$('span').map((_, element) => {
-        //     const newDate = $(element).text().trim()
-        //     if (check(newDate, body) === true) {
-        //         body.push(newDate)
-        //     }
-        // })
         $('h3').map((_, element) => {
             const newDate = $(element).text().trim()
             if (check(newDate, body) === true) {
@@ -136,7 +111,7 @@ const crawlPage = async(url) => {
             if (newUrl && newUrl.startsWith("http") && newUrl.startsWith("https")) {
                 if (check(newUrl, links) === true) {
                     links.push(newUrl)
-                    createDbCrawler(title, url, images, bodySplitted, newUrl, true)
+                        // createDbCrawler(title, url, images, bodySplitted, newUrl, true)
                 }
             }
         })
@@ -159,7 +134,7 @@ const crawlPage = async(url) => {
             await page.save()
         }
         // console.log(`Crawled : ${url}`)
-        // console.log(` Body : ${bodySplitted} Number: ${body.length}`)
+        console.log(`Title: ${title} images: ${images.length}  Body : ${bodySplitted.length} links: ${links.length} status: true`)
         for (const newUrl of links) {
             addToQueue(newUrl)
         }
@@ -178,7 +153,7 @@ const run = () => {
 
             while (queue.length > 0) {
                 const nextUrl = queue.shift()
-                console.log("Queue", queue, queue.length)
+
                 urlPassed.push(nextUrl)
                 while (queue.length < queue.length) {
                     console.log("inside" + queue.length)
