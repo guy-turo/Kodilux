@@ -100,6 +100,20 @@ class LinkedList {
             this.tail = curNode
         }
     }
+    update(value, newValue) {
+        if (!this.head) {
+            return
+        }
+        let curNode = this.head
+        while (curNode) {
+            if (curNode.value === value) {
+                curNode.value = newValue
+                return true
+            }
+            curNode = curNode.next
+        }
+        return false
+    }
     toArray() {
         const elements = []
 
@@ -126,6 +140,7 @@ console.log(linkedList.find('james'))
 linkedList.insertAfter('value-1', "james")
 linkedList.insertAfter('value-2', 'first value')
 
+linkedList.update("first value", "second value")
 const newList = linkedList.toArray()
 
 const valueList = newList.forEach((element) => console.log(element.value))
