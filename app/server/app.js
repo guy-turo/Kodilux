@@ -19,17 +19,18 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
 const sessionStorage = new MongoStore({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl: process.env.MONGO_LOCAL,
     mongooseConnection: mongoose.connection,
     // collection: 'sessions',
 })
 app.use(session({
-    secret: "",
+    secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
     store: sessionStorage,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24
+        // maxAge: 1000 * 60 * 60 * 24
+        maxAge: 30
     }
 }))
 

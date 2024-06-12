@@ -1,7 +1,7 @@
 const axios = require("axios")
 const cheerio = require("cheerio")
-const { uriLocal } = require('../server/db/connect')
-const { pageModel } = require("../server/models/pageModel")
+const { uriLocal } = require('../db/connect')
+const { pageModel } = require("../models/pageModel")
 
 const mongoose = require('mongoose');
 
