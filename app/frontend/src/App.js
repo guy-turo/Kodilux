@@ -20,6 +20,8 @@ const  App=()=> {
     if(session && session!==''){
       console.log("sessonId :",session)
       setIsAuthenticate(true)
+    }else{
+      setIsAuthenticate(false)
     }
   },[])
   console.log('isAuthenticate :', isAuthenticate)

@@ -22,3 +22,4 @@ const axiosBaseQuery =({baseUrl}= {baseUrl:''})=>async({url,method,data,params,h
         }
     }
 }
+export default axiosBaseQuery
