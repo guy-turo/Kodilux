@@ -29,7 +29,7 @@ const  App=()=> {
    <main>
     <Routes>
       <Route path='/' element={<SearchPage/>}/>
-      <Route path='/signIn' element={<LoginPage/>}/>
+      <Route path='/signIn/:id' element={<LoginPage/>}/>
       <Route path='/signUp' element={<RegisterPage/>}/>
       <Route path='/recover' element={<RecoverPage/>}/>
       <Route path='*' element={<NotFound/>}/>
