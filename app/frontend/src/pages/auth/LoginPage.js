@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import logo from '../../assets/logo.png'
 import {Link} from 'react-router-dom'
 import { MdNavigateBefore } from "react-icons/md";
+import { MdNavigateNext } from "react-icons/md";
 
 function LoginPage() {
   const [email,setEmail]= useState('')
@@ -11,7 +12,12 @@ function LoginPage() {
   const [hiddenPassword,setHiddenPassword] = useState(true)
 
   const checkFunc = ()=>{
-    setEmailChecked(!emailChecked)
+    if(email !==''){
+      setEmailChecked(!emailChecked)
+    }else{
+      setEmailChecked(false)
+    }
+   
   }
   return (
     <div className='min-h-screen flex flex-col justify-center space-y-2 items-center bg-gray-100'>
@@ -26,24 +32,23 @@ function LoginPage() {
           type="text" 
           id='email' 
           value={email} 
+          required
           onChange={(e)=>setEmail(e.target.value)}  
           placeholder="Email or phone"
-          name="Email" 
           className="py-3 px-2  block w-full border-black   border-solid border rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 \
           disabled:pointer-events-none \
             dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
         />
-         
         <div className='flex self-end justify-end space-x-4 '>
-      
         <span className=' text-blue-500 text-sm  hover:text-blue-600 cursor-pointer'>
             <Link to="/signup">
             Create account
             </Link>
           </span>
-      <button onClick={checkFunc} className='bg-blue-400 rounded-md text-black text-sm font-semibold px-2'>Next</button>
+      <button onClick={checkFunc} className='bg-blue-400 rounded-md text-black text-sm font-semibold px-2 border border-solid border-gray-500 flex items-center justify-center self-center'>
+        Next<MdNavigateNext />
+        </button>
       </div>
-      
          </form>
         </div>:
         <div className=' w-full h-full flex justify-around   flex-col items-start'>
@@ -51,7 +56,6 @@ function LoginPage() {
          <MdNavigateBefore />
           </button>
         <form className='space-y-2  w-full flex-col justify-end self-end'>
-        
         <input 
     id="hs-toggle-password-with-checkbox" 
     value={password} 
@@ -61,7 +65,6 @@ function LoginPage() {
     disabled:opacity-50 disabled:pointer-events-none  dark:placeholder-neutral-500 dark:focus:ring-neutral-600`} 
     placeholder="Enter current password" 
     />
-        
         <div class="flex mt-4 justify-end">
     <input data-hs-toggle-password='{"target": "#hs-toggle-password-with-checkbox"}' 
       id="hs-toggle-password-checkbox" 
@@ -85,11 +88,9 @@ function LoginPage() {
         className={`rounded-md p-1 w-full justify-center  font-semibold flex  border border-solid border-gray-400 bg-blue-500 px-2`}>
           Login 
       </button>
-   
         </form>
        </div>
         }
-     
       </div>
      <div className="flex  justify-between  ">
       <div></div>

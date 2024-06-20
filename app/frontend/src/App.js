@@ -23,20 +23,23 @@ const  App=()=> {
     }else{
       setIsAuthenticate(false)
     }
-  },[])
+  },[session])
   console.log('isAuthenticate :', isAuthenticate)
+ 
   return (
    <main>
     <Routes>
       <Route path='/' element={<SearchPage/>}/>
-      <Route path='/signIn/:id' element={<LoginPage/>}/>
+
+      <Route path='/signIn' element={<LoginPage/>}/>
+      
       <Route path='/signUp' element={<RegisterPage/>}/>
       <Route path='/recover' element={<RecoverPage/>}/>
       <Route path='*' element={<NotFound/>}/>
 
       <Route path='/superAdmin' element={<PrivateRoute isAuthenticated={isAuthenticate}><SuperAdmin/></PrivateRoute>}/>
       <Route path='/admin' element={<PrivateRoute isAuthenticated={isAuthenticate}><Admin/></PrivateRoute>}/>
-      <Route path='/Profile' element={<PrivateRoute isAuthenticated={isAuthenticate}><ProfilePage/></PrivateRoute>}/>
+      <Route path='/profile' element={<PrivateRoute isAuthenticated={isAuthenticate}><ProfilePage/></PrivateRoute>}/>
     </Routes>
    </main>
   );
